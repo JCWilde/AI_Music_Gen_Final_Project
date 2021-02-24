@@ -1,29 +1,30 @@
-
 <html>
-	<head>
-		<title>AI MUSIC GEN</title>
-		
-		<script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/0.8.0/p5.js"></script>
-		<script src="js/midiInp.js"></script>
-		
-		<link rel="stylesheet" href="style.css">
-	</head>
-	<body>
-		
-		<div id="sideBar" class = "col-3">
-			<ul style="list-style-type: none;">
-				<h2>Parameters</h2>
-				<br/>
-				<li>
-					<h4>Style - <select id="style">
+
+<head>
+    <title>AI MUSIC GEN</title>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/0.8.0/p5.js"></script>
+    <script src="js/midiInp.js"></script>
+
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+
+    <div id="sideBar" class="col-3">
+        <ul style="list-style-type: none;">
+            <h2>Parameters</h2>
+            <br/>
+            <li>
+                <h4>Style - <select id="style">
 						<option value = "1">Happy</option>
 						<option value = "2">Sad</option>
 						<option value = "3">Energetic</option>
 						<option value = "4">Scary</option>
 					</select></h4>
-				</li>
-				<li>
-					<h4>Octave - <select id="octave">
+            </li>
+            <li>
+                <h4>Octave - <select id="octave">
 						<option value = "1">Low</option>
 						<option value = "2">2</option>
 						<option value = "3">3</option>
@@ -33,45 +34,45 @@
 						<option value = "7">7</option>
 						<option value = "8">High</option>
 					</select></h4>
-				</li>
-				<br/>
-				<li>
-					<button>Generate</button>
-				</li>
-			</ul>
-			<hr/>
-			<ul style="list-style-type: none;">
-				<h2>Download</h2>
-				<li>
-					<b>Name Your Song:</b><br><input type="text" id="file_name"/>
-				</li>
-				<li>
-					<h4>File Type - <select id="file_type">
+            </li>
+            <br/>
+            <li>
+                <button>Generate</button>
+            </li>
+        </ul>
+        <hr/>
+        <ul style="list-style-type: none;">
+            <h2>Download</h2>
+            <li>
+                <b>Name Your Song:</b><br><input type="text" id="file_name" />
+            </li>
+            <li>
+                <h4>File Type - <select id="file_type">
 						<option value = "1">midi</option>
 						<option value = "2">mp3</option>
 						<option value = "3">ogg</option>
 						<option value = "4">wav</option>
 					</select></h4>
-				</li>
-				<br>
-				<li>
-					<button>Download</button>
-				</li>
-			</ul>
-		</div>
-	
+            </li>
+            <br>
+            <li>
+                <button>Download</button>
+            </li>
+        </ul>
+    </div>
 
-		<div id="title" class="col-12">
-			<h1>Music Generation with AI</h1>
-			<h3>Made by Jakob C. Hild | Sponsor: Maddie Weldon</h3>
-			<br>
-			<h3>Insert some midi to get started, then press the <i>generate</i> button.</h3>
-		</div>
-		
-		
-		<div id="midiParams" class="col-11">
-			<h2>Midi Input Parameters</h2>
-			<span id="midiSelectors">
+
+    <div id="title" class="col-12">
+        <h1>Music Generation with AI</h1>
+        <h3>Made by Jakob C. Hild | Sponsor: Maddie Weldon</h3>
+        <br>
+        <h3>Insert some midi to get started, then press the <i>generate</i> button.</h3>
+    </div>
+
+
+    <div id="midiParams" class="col-11">
+        <h2>Midi Input Parameters</h2>
+        <span id="midiSelectors">
 				<button id="midiRefresh" onclick="if(confirm('Are you sure you want to refresh the midi you have made so far?')) {SKETCH.setup();}">
 					Refresh Midi
 				</button>
@@ -89,14 +90,14 @@
 					<option value = "7">G</option>
 					<option value = "8">G#</option>
 				</select></span>
-				<span style="font-weight: bold;">Scale - <select id="chord_type">
+        <span style="font-weight: bold;">Scale - <select id="chord_type">
 					<option value = "0" selected>Major</option>
 					<option value = "1">Minor</option>
 					<option value = "2">Diminished Whole-Half</option>
 					<option value = "3">Diminished Half-Whole</option>
 				</select></span>
-				<button onClick="SKETCH.setChordType();SKETCH.setNoteText();">Update Key/Scale</button>
-				<span style="font-weight: bold;">Note Length - <select id="note_length">
+        <button onClick="SKETCH.setChordType();SKETCH.setNoteText();">Update Key/Scale</button>
+        <span style="font-weight: bold;">Note Length - <select id="note_length">
 					<option value = "1">Whole</option>
 					<option value = "2">Half</option> 
 					<option value = "4">Quarter</option>
@@ -104,11 +105,12 @@
 					<option value = "16">16th</option>
 					<option value = "32">32th</option>
 				</select></span>
-				
-			</span>
-			<div id="midiParam" height="40%"></div>
-		</div>
-		
-		
-	</body>
+
+        </span>
+        <div id="midiParam" height="40%"></div>
+    </div>
+
+
+</body>
+
 </html>
