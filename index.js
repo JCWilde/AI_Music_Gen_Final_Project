@@ -1,24 +1,26 @@
-const http = require("http");
-const fs = require("fs");
+const express = require('express')
+const app = express()
+const path = require('path')
 
-const host = 'localhost';
-const port = '8000';
-
-
-const requestListener = function(req, res) {
-    console.log(req.url);
-    if (req.url == "/") req.url = "/index.html";
-    fs.readFile("." + req.url, "UTF-8", function(err, file) {
-        if (err) {
-            res.writeHead(404, { "Content-Type": "text/plain" });
-            res.end(err);
-        }
-        res.writeHead(200, { "Content-Type": "text/" + (req.url).split(".")[1] });
-        res.end(file);
-    });
-}
-
-const server = http.createServer(requestListener);
-server.listen(port, host, () => {
-    console.log('server is running on http://' + host + ':' + port);
+app.get('/style.css', function(req, res) {
+    res.sendFile(__dirname + "/style.css")
 })
+
+app.get('/js/midiInp.js', function(req, res) {
+    res.sendFile(path.join(__dirname + "/js/midiInp.js"))
+})
+
+app.get('/', (req, res) => {
+    res.sendFile(path.join(__dirname + "/index.html"))
+})
+
+app.post('/', (req, res) => {
+    console.log(req.body)
+    res.sendFile(path.join(__dirname + "/index.html"))
+})
+
+app.get('/license', (req, res) => {
+    res.sendFile(path.join(__dirname + "/license.html"))
+})
+
+app.listen(8000);
