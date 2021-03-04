@@ -1,60 +1,43 @@
-//import MidiWriter from 'midi-writer-js';
-//import fs from 'fs';
+var synth = new Tone.PolySynth().toMaster();
 
+function sleep(ms) {
+    return new Promise(resolve => setTimeout(resolve, ms));
+}
+
+playMidi = async function(notes, BPM = 120) {
+    var amt = document.getElementById('note_length').value;
+    for (var b = 0; b < parseInt(amt); b++) {
+        var N = [];
+        for (var box in notes)
+            if (notes[box].time === b && notes[box].pressed)
+                N.push(notes[box].getNote());
+        for (var n in N)
+            synth.triggerAttackRelease(N[n], amt.toString() + "n");
+        await sleep((60000 / BPM) / (parseInt(amt) / 4));
+    }
+}
 
 function sketch_idnameofdiv(p) {
-
-    let amtx = 16;
-    let amty = 25;
-    let HSIZE = 0;
-    let LSIZE = 0;
-    let textOffset = 32;
-    let noffset = 0;
-    let noteText = ["C", "C#", "D", "D#", "E", "F", "F#", "G", "G#", "A", "A#", "B"];
-    let notes = [];
-    p.notes = [];
-
-    let chordTypes = [
-        [
-            [2, 4, 5, 9, 11, 14, 16, 17, 21, 23],
-            [7, 19]
-        ],
-        [
-            [2, 3, 5, 8, 10, 14, 15, 17, 20, 22],
-            [7, 19]
-        ],
-        [
-            [1, 3, 4, 7, 9, 10, 13, 15, 16, 19, 21, 22],
-            [6, 18]
-        ],
-        [
-            [2, 3, 5, 8, 9, 11, 14, 15, 17, 20, 21, 23],
-            [6, 18]
-        ],
-    ];
-    let ct = 0;
-
-    function midiBox(_note, _time) {
+    midiBox = function(_note, _time) {
         this.note = _note;
         this.time = _time;
         this.pressed = false;
-        this.color = p.color(0, 0, 0, 0);
+        this.color = SKETCH.color(0, 0, 0, 0);
         this.show = function() {
             p.stroke(p.color('#222222'));
             p.fill(this.color);
             p.rect((this.time * LSIZE) + textOffset, (p.windowHeight * 0.5) - (this.note * HSIZE) - HSIZE, LSIZE, HSIZE);
-
-            //p.fill(0);
-            //p.text(this.note,(this.time * LSIZE) + LSIZE, (p.windowHeight * 0.5) - (this.note * HSIZE));
         }
         this.update = function(n) {
             switch (n) {
                 case 0:
                     if (this.mouseInside()) {
                         this.pressed = !this.pressed;
-                        if (this.pressed)
+                        if (this.pressed) {
                             this.color = p.color(0, 150, 0, 200);
-                        else
+                            // play note
+                            synth.triggerAttackRelease(this.getNote(), document.getElementById('note_length').value + "n");
+                        } else
                             this.color = p.color(0, 0, 0, 0);
                     }
                     break;
@@ -75,34 +58,40 @@ function sketch_idnameofdiv(p) {
                     return true;
             return false;
         }
+
+        this.getNote = function() {
+            var oct = parseInt(document.getElementById('octave').value) + Math.floor(this.note / 12);
+            return noteText[this.note % 12] + oct.toString();
+        }
     }
+    let amtx = 16;
+    let amty = 25;
+    let HSIZE = 0;
+    let LSIZE = 0;
+    let textOffset = 32;
+    let noffset = 0;
+    let noteText = ["C", "C#", "D", "D#", "E", "F", "F#", "G", "G#", "A", "A#", "B"];
+    let notes = [];
 
-    /*
-    p.playMidi = function () {
-    	var track = new MidiWriter.Track();
-
-    	var trackNotes = [];
-    	for(var i in notes) {
-    		if(notes[i].pressed) {
-    			var note = notes[i];
-    			trackNotes.push({
-    				pitch: (12 * parseInt(document.getElementById('octave').value)) + note.note,
-    				duration: amtx,
-    				startTick: 128 * note.time
-    			});
-    		}
-    	}
-    	track.addEvent(trackNotes);
-
-    	var write = new MidiWriter.Writer(track);
-
-    	var b64s = write.base64();
-
-    	var data = b64s.split("base64,").pop();
-
-    	fs.writeFileSync("test.mid", data, {encoding: 'base64'});
-    }
-    */
+    let chordTypes = [
+        [
+            [2, 4, 5, 9, 11, 14, 16, 17, 21, 23],
+            [7, 19]
+        ],
+        [
+            [2, 3, 5, 8, 10, 14, 15, 17, 20, 22],
+            [7, 19]
+        ],
+        [
+            [1, 3, 4, 7, 9, 10, 13, 15, 16, 19, 21, 22],
+            [6, 18]
+        ],
+        [
+            [2, 3, 5, 8, 9, 11, 14, 15, 17, 20, 21, 23],
+            [6, 18]
+        ],
+    ];
+    let ct = 0;
 
     p.setup = function() {
         notes = [];

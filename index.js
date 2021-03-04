@@ -2,9 +2,11 @@ const express = require('express')
 const app = express()
 const path = require('path')
 
-// return scripts like css and js
+// return scripts like css and js and the icon
 app.get('/style.css', function(req, res) { res.sendFile(__dirname + "/style.css") })
 app.get('/js/midiInp.js', function(req, res) { res.sendFile(path.join(__dirname + "/js/midiInp.js")) })
+app.get('/js/midiBox.js', function(req, res) { res.sendFile(path.join(__dirname + "/js/midiBox.js")) })
+app.get('/icon.png', function(req, res) { res.sendFile(__dirname + "/icon.png") })
 
 // index get and post methods
 app.get('/', (req, res) => { res.sendFile(path.join(__dirname + "/index.html")) })

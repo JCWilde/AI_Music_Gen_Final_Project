@@ -1,9 +1,15 @@
+<!DOCTYPE html>
 <html>
 
 <head>
     <title>AI MUSIC GEN</title>
 
+    <link rel="icon" href="icon.png">
+
     <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/0.8.0/p5.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/tone/14.4.9/Tone.js"></script>
+
+    <script src="js/midiBox.js"></script>
     <script src="js/midiInp.js"></script>
 
     <link rel="stylesheet" href="style.css">
@@ -73,6 +79,7 @@
     <div id="midiParams" class="col-11">
         <h2>Midi Input Parameters</h2>
         <span id="midiSelectors">
+                <button onclick="playMidi(SKETCH.notes);">Play</button>
 				<button id="midiRefresh" onclick="if(confirm('Are you sure you want to refresh the midi you have made so far?')) {SKETCH.setup();}">
 					Refresh Midi
 				</button>
