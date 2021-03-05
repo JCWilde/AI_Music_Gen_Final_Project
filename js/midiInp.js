@@ -17,6 +17,8 @@ playMidi = async function(notes, BPM = 120) {
     }
 }
 
+const SIZEOFMIDIBOX = 0.65;
+
 function sketch_idnameofdiv(p) {
     midiBox = function(_note, _time) {
         this.note = _note;
@@ -26,7 +28,7 @@ function sketch_idnameofdiv(p) {
         this.show = function() {
             p.stroke(p.color('#222222'));
             p.fill(this.color);
-            p.rect((this.time * LSIZE) + textOffset, (p.windowHeight * 0.5) - (this.note * HSIZE) - HSIZE, LSIZE, HSIZE);
+            p.rect((this.time * LSIZE) + textOffset, (p.windowHeight * SIZEOFMIDIBOX) - (this.note * HSIZE) - HSIZE, LSIZE, HSIZE);
         }
         this.update = function(n) {
             switch (n) {
@@ -54,7 +56,7 @@ function sketch_idnameofdiv(p) {
 
         this.mouseInside = function() {
             if (p.mouseX - textOffset > this.time * LSIZE && p.mouseX - textOffset < this.time * LSIZE + LSIZE)
-                if (p.mouseY > (p.windowHeight * 0.5) - (this.note * HSIZE) - HSIZE && p.mouseY < ((p.windowHeight * 0.5) - (this.note * HSIZE)))
+                if (p.mouseY > (p.windowHeight * SIZEOFMIDIBOX) - (this.note * HSIZE) - HSIZE && p.mouseY < ((p.windowHeight * SIZEOFMIDIBOX) - (this.note * HSIZE)))
                     return true;
             return false;
         }
@@ -98,9 +100,9 @@ function sketch_idnameofdiv(p) {
 
         amtx = parseInt(document.getElementById("note_length").value);
 
-        p.createCanvas(document.getElementById('midiParam').clientWidth, p.windowHeight * 0.5);
-        HSIZE = p.windowHeight * 0.5 / amty;
-        LSIZE = (document.getElementById('midiParam').clientWidth - textOffset) / amtx;
+        p.createCanvas(document.getElementById('midiParam').clientWidth - 15, p.windowHeight * SIZEOFMIDIBOX);
+        HSIZE = p.windowHeight * SIZEOFMIDIBOX / amty;
+        LSIZE = (document.getElementById('midiParam').clientWidth - textOffset - 15) / amtx;
 
         for (var x = 0; x < amtx; x++)
             for (var y = 0; y < amty; y++)
@@ -125,11 +127,11 @@ function sketch_idnameofdiv(p) {
             else if (chordTypes[ct][1].includes(i)) p.fill(fifth);
             else if (chordTypes[ct][0].includes(i)) p.fill(inKey);
             else p.fill(outKey);
-            p.rect(0, (p.windowHeight * 0.5) - (i * HSIZE) - HSIZE, document.getElementById('midiParam').clientWidth, HSIZE + 1);
+            p.rect(0, (p.windowHeight * SIZEOFMIDIBOX) - (i * HSIZE) - HSIZE, document.getElementById('midiParam').clientWidth, HSIZE + 1);
         }
 
         // show text
-        p.textSize(HSIZE - 2);
+        p.textSize(HSIZE - 5);
         p.fill(0);
         for (var i = 0; i <= amty; i++)
             p.text(noteText[i % noteText.length], 4, (amty * HSIZE) - (HSIZE * i) - 3);
@@ -176,9 +178,9 @@ function sketch_idnameofdiv(p) {
     }
 
     p.windowResized = function() {
-        p.resizeCanvas(document.getElementById('midiParam').clientWidth, p.windowHeight * 0.5);
-        HSIZE = p.windowHeight * 0.5 / amty;
-        LSIZE = (document.getElementById('midiParam').clientWidth - textOffset) / amtx;
+        p.resizeCanvas(document.getElementById('midiParam').clientWidth - 15, p.windowHeight * SIZEOFMIDIBOX);
+        HSIZE = p.windowHeight * SIZEOFMIDIBOX / amty;
+        LSIZE = (document.getElementById('midiParam').clientWidth - textOffset - 15) / amtx;
     }
 }
 let SKETCH = new p5(sketch_idnameofdiv, 'midiParam')

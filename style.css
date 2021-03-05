@@ -1,62 +1,52 @@
-
-
-* {
-	box-sizing: border-box;
-}
-
-.col-1 {width: 6.25%;}
-.col-2 {width: 12.5%;}
-.col-3 {width: 18.75%;}
-.col-4 {width: 25.0%;}
-.col-5 {width: 31.25%;}
-.col-6 {width: 37.5%;}
-.col-7 {width: 43.75%;}
-.col-8 {width: 50.0%;}
-.col-9 {width: 56.25%;}
-.col-10 {width: 62.5%;}
-.col-11 {width: 68.75%;}
-.col-12 {width: 75.0%;}
-.col-13 {width: 81.25%;}
-.col-14 {width: 87.5%;}
-.col-15 {width: 93.75%;}
-.col-16 {width: 100.0%;}
-
-.row::after {
-	content: "";
-	clear: both;
-	display: table;
-	display: table;
-}
-
-[class*="col-"] {
-	float: left;
+@media screen and (min-width: 320px) and (max-width: 767px) and (orientation: portrait) {
+    html {
+        transform: rotate(-90deg);
+        transform-origin: left top;
+        width: 100vh;
+        height: 100vw;
+        overflow-x: hidden;
+        position: absolute;
+        top: 100%;
+        left: 0;
+    }
 }
 
 #sideBar {
-	border: 2px solid #000000;
-	-webkit-border-radius: 5px;
-	border-radius: 5px;
-	height: 95%;
-	margin-right: 6.25%;
-	overflow: scroll;
+    border: 2px solid #000000;
+    border-radius: 5px;
+    height: 85%;
+    bottom: 1%;
+    position: absolute;
+    min-width: 15em;
 }
 
 #midiParams {
-	border: 1px solid #000000;
-	-webkit-border-radius: 5px;
-	border-radius: 5px;
-	position: absolute;
-	left: 25%;
-	bottom: 6.25%;
-	text-align: center;
+    border: 2px solid #000000;
+    border-radius: 5px;
+    position: absolute;
+    left: 16em;
+    right: 0.5em;
+    height: 85%;
+    bottom: 1%;
+    text-align: center;
+}
+
+#defaultCanvas0 {
+    border: 2px solid #000000;
+    border-radius: 3.5px;
+    bottom: 4%;
+    left: 0.5em;
+    position: absolute;
 }
 
 #midiSelectors {
-	margin-bottom: 0%;
-	width: 100%;
+    border: 2px solid #000000;
+    border-radius: 5px;
+    width: 100%;
+    padding: 0.5em;
 }
 
 #title {
-	text-align: center;
-	height: 30%;
+    text-align: center;
+    height: 30%;
 }
