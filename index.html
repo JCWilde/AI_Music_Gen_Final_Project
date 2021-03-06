@@ -9,7 +9,8 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/0.8.0/p5.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/tone/14.4.9/Tone.js"></script>
 
-    <script src="js/midiBox.js"></script>
+    <script src="js/musicInf.js"></script>
+    <script src="js/midiOut.js"></script>
     <script src="js/midiInp.js"></script>
 
     <link rel="stylesheet" href="style.css">
@@ -69,7 +70,14 @@
 
 
     <div id="title">
-        <p><strong><span style="font-size: 36px;">Music Generation with AI&nbsp;</span></strong><span style="font-size: 24px;">Made by Jakob Hild | Sponsor: Maddie Weldon</span></p>
+        <p>
+            <strong><span style="font-size: 36px;">
+                Music Generation with AI&nbsp;
+            </span></strong>
+            <span style="font-size: 24px;">
+                Made by Jakob Hild | Mentor: Maddie Weldon
+            </span>
+        </p>
     </div>
 
 
@@ -100,7 +108,7 @@
 					<option value = "2">Diminished Whole-Half</option>
 					<option value = "3">Diminished Half-Whole</option>
 				</select></span>
-        <button onClick="SKETCH.setChordType();SKETCH.setNoteText();">Update Key/Scale</button>
+        <button onClick="setMusicInfo();">Update Key/Scale</button>
         <span style="font-weight: bold;">Note Length - <select id="note_length">
 					<option value = "1">Whole</option>
 					<option value = "2">Half</option> 
@@ -109,7 +117,6 @@
 					<option value = "16">16th</option>
 					<option value = "32">32th</option>
 				</select></span>
-
         </span>
         <div id="midiParam"></div>
     </div>

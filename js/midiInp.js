@@ -1,36 +1,14 @@
-var synth = new Tone.PolySynth().toMaster();
-
-function sleep(ms) {
-    return new Promise(resolve => setTimeout(resolve, ms));
-}
-
-playMidi = async function(notes, BPM = 120) {
-    var amt = document.getElementById('note_length').value;
-    for (var b = 0; b < parseInt(amt); b++) {
-        var N = [];
-        for (var box in notes)
-            if (notes[box].time === b && notes[box].pressed)
-                N.push(notes[box].getNote());
-        for (var n in N)
-            synth.triggerAttackRelease(N[n], amt.toString() + "n");
-        await sleep((60000 / BPM) / (parseInt(amt) / 4));
-    }
-}
-
-const SIZEOFMIDIBOX = 0.65;
 
 function sketch_idnameofdiv(p) {
-    midiBox = function(_note, _time) {
-        this.note = _note;
-        this.time = _time;
-        this.pressed = false;
-        this.color = SKETCH.color(0, 0, 0, 0);
-        this.show = function() {
+    class midiBoxInp extends midiBox {
+
+        color = SKETCH.color(0, 0, 0, 0);
+        show() {
             p.stroke(p.color('#222222'));
             p.fill(this.color);
             p.rect((this.time * LSIZE) + textOffset, (p.windowHeight * SIZEOFMIDIBOX) - (this.note * HSIZE) - HSIZE, LSIZE, HSIZE);
         }
-        this.update = function(n) {
+        update(n) {
             switch (n) {
                 case 0:
                     if (this.mouseInside()) {
@@ -53,47 +31,21 @@ function sketch_idnameofdiv(p) {
                     break;
             }
         }
-
-        this.mouseInside = function() {
+        mouseInside() {
             if (p.mouseX - textOffset > this.time * LSIZE && p.mouseX - textOffset < this.time * LSIZE + LSIZE)
                 if (p.mouseY > (p.windowHeight * SIZEOFMIDIBOX) - (this.note * HSIZE) - HSIZE && p.mouseY < ((p.windowHeight * SIZEOFMIDIBOX) - (this.note * HSIZE)))
                     return true;
             return false;
         }
-
-        this.getNote = function() {
-            var oct = parseInt(document.getElementById('octave').value) + Math.floor(this.note / 12);
-            return noteText[this.note % 12] + oct.toString();
-        }
     }
+    
+    const SIZEOFMIDIBOX = 0.65;
     let amtx = 16;
     let amty = 25;
     let HSIZE = 0;
     let LSIZE = 0;
     let textOffset = 32;
-    let noffset = 0;
-    let noteText = ["C", "C#", "D", "D#", "E", "F", "F#", "G", "G#", "A", "A#", "B"];
     let notes = [];
-
-    let chordTypes = [
-        [
-            [2, 4, 5, 9, 11, 14, 16, 17, 21, 23],
-            [7, 19]
-        ],
-        [
-            [2, 3, 5, 8, 10, 14, 15, 17, 20, 22],
-            [7, 19]
-        ],
-        [
-            [1, 3, 4, 7, 9, 10, 13, 15, 16, 19, 21, 22],
-            [6, 18]
-        ],
-        [
-            [2, 3, 5, 8, 9, 11, 14, 15, 17, 20, 21, 23],
-            [6, 18]
-        ],
-    ];
-    let ct = 0;
 
     p.setup = function() {
         notes = [];
@@ -106,10 +58,9 @@ function sketch_idnameofdiv(p) {
 
         for (var x = 0; x < amtx; x++)
             for (var y = 0; y < amty; y++)
-                notes.push(new midiBox(y, x));
+                notes.push(new midiBoxInp(y, x));
 
-        p.setNoteText();
-        p.setChordType();
+        setMusicInfo();
         p.notes = notes;
     }
 
@@ -143,37 +94,13 @@ function sketch_idnameofdiv(p) {
 
     }
 
-    p.setNoteText = function() {
-        noteText = ["C", "C#", "D", "D#", "E", "F", "F#", "G", "G#", "A", "A#", "B"];
-        var n = parseInt(document.getElementById('key').value)
-        var temp = [];
-        for (var i = 0; i < n; i++) {
-            temp.push(noteText[0]);
-            noteText.shift();
-        }
-        for (var i = 0; i < n; i++)
-            noteText.push(temp[i]);
-        noffset = (parseInt(document.getElementById("octave").value)) + n;
-    }
+    p.mousePressed = function() { for (var i in notes) notes[i].update(1); }
 
-    p.setChordType = function() { ct = parseInt(document.getElementById('chord_type').value); }
-
-    p.mousePressed = function() {
-        for (var i in notes) {
-            notes[i].update(1);
-        }
-    }
-
-    p.mouseDragged = function() {
-        for (var i in notes) {
-            notes[i].update(1);
-        }
-    }
+    p.mouseDragged = function() { for (var i in notes) notes[i].update(1); }
 
     p.mouseReleased = function() {
-        for (var i in notes) {
+        for (var i in notes)
             notes[i].update(0);
-        }
         p.notes = notes;
     }
 
