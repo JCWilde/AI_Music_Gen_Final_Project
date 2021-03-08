@@ -41,9 +41,7 @@ completelyRandom = function() {
 
 playGen = async function() {
     if(ready) 
-        for(var i in bars) {
-            console.log(i);
+        for(var i in bars)
             await playMidi(bars[i].notes);
-        }
     else alert("You haven't generated anything yet!");
 }
