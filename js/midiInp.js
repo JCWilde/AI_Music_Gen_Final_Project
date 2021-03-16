@@ -39,6 +39,10 @@ function sketch_idnameofdiv(p) {
         }
     }
     
+    let noffset = 0; // Note Offset (Don't be fooled, offset is just which octave is being used)
+    let noteText = ["C", "C#", "D", "D#", "E", "F", "F#", "G", "G#", "A", "A#", "B"];
+    let ct = 0; // Chord Type is explained below
+    let nDiff = 0; // The difference that corrects the octave according to what key is played
     const SIZEOFMIDIBOX = 0.65;
     let amtx = 16;
     let amty = 25;
@@ -46,6 +50,18 @@ function sketch_idnameofdiv(p) {
     let LSIZE = 0;
     let textOffset = 32;
     let notes = [];
+
+    // This sets the note text starting from base C
+    p.setMusicInfo = function() {
+        p.noteText = ["C", "C#", "D", "D#", "E", "F", "F#", "G", "G#", "A", "A#", "B"];
+        p.nDiff = parseInt(document.getElementById('key').value);
+        for (var i = 0; i < p.nDiff; i++) p.noteText.push(p.noteText.shift());
+        p.noffset = parseInt(document.getElementById("octave").value);
+        p.ct = parseInt(document.getElementById('chord_type').value);
+        for(i in p.notes) {
+            p.notes[i].setMusicInfo(p.nDiff);
+        }
+    }
 
     p.setup = function() {
         notes = [];
@@ -56,11 +72,10 @@ function sketch_idnameofdiv(p) {
         HSIZE = p.windowHeight * SIZEOFMIDIBOX / amty;
         LSIZE = (document.getElementById('midiParam').clientWidth - textOffset - 15) / amtx;
 
+        p.setMusicInfo();
         for (var x = 0; x < amtx; x++)
             for (var y = 0; y < amty; y++)
                 notes.push(new midiBoxInp(y, x));
-
-        setMusicInfo();
         p.notes = notes;
     }
 
@@ -75,8 +90,8 @@ function sketch_idnameofdiv(p) {
         var fifth = p.color('#E3B23C');
         for (var i = 0; i < 25; i++) {
             if ([0, 12, 24].includes(i)) p.fill(main);
-            else if (chordTypes[ct][1].includes(i)) p.fill(fifth);
-            else if (chordTypes[ct][0].includes(i)) p.fill(inKey);
+            else if (chordTypes[p.ct][1].includes(i)) p.fill(fifth);
+            else if (chordTypes[p.ct][0].includes(i)) p.fill(inKey);
             else p.fill(outKey);
             p.rect(0, (p.windowHeight * SIZEOFMIDIBOX) - (i * HSIZE) - HSIZE, document.getElementById('midiParam').clientWidth, HSIZE + 1);
         }
@@ -85,7 +100,7 @@ function sketch_idnameofdiv(p) {
         p.textSize(HSIZE - 5);
         p.fill(0);
         for (var i = 0; i <= amty; i++)
-            p.text(noteText[i % noteText.length], 4, (amty * HSIZE) - (HSIZE * i) - 3);
+            p.text(p.noteText[i % p.noteText.length], 4, (amty * HSIZE) - (HSIZE * i) - 3);
 
         // show notes
         p.stroke(0.5);

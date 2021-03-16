@@ -3,6 +3,11 @@ var synth = new Tone.PolySynth().toMaster();
 function sleep(ms) { return new Promise(resolve => setTimeout(resolve, ms)); }
 
 class midiBox {
+    noteText = ["C", "C#", "D", "D#", "E", "F", "F#", "G", "G#", "A", "A#", "B"];
+    nDiff = 0;
+    noffest = parseInt(document.getElementById("octave").value);
+    ct = parseInt(document.getElementById('chord_type').value);
+
     note = 0;
     time = 0;
     pressed = false;
@@ -10,18 +15,30 @@ class midiBox {
     constructor(_note, _time) {
         this.note = _note;
         this.time = _time;
+
+        // This is pretty much the same code from set music, the basic idea is that each time
+        // slice will be able to have its own key, this will allow for key switches over time.
+        this.noteText = ["C", "C#", "D", "D#", "E", "F", "F#", "G", "G#", "A", "A#", "B"];
+        this.nDiff = parseInt(document.getElementById('key').value);
+        for (var i = 0; i < this.nDiff; i++) this.noteText.push(this.noteText.shift());
+        this.noffset = parseInt(document.getElementById("octave").value);
+        this.ct = parseInt(document.getElementById('chord_type').value);
     }
 
+    setMusicInfo(_nDiff) {
+        this.noteText = ["C", "C#", "D", "D#", "E", "F", "F#", "G", "G#", "A", "A#", "B"];
+        this.nDiff = _nDiff;
+        for (var i = 0; i < this.nDiff; i++) this.noteText.push(this.noteText.shift());
+        this.noffset = (parseInt(document.getElementById("octave").value));
+        this.ct = parseInt(document.getElementById('chord_type').value);
+    }
+    
     getNote() {
-        var oct = noffset + Math.floor(this.note / 12);
-        return noteText[this.note % 12] + oct.toString();
+        var oct = this.noffset + Math.floor((this.note + this.nDiff) / 12);
+        return this.noteText[this.note % 12] + oct.toString();
     }
 }
 
-let noffset = 0; // Note Offset (Don't be fooled, offset is just which octave is being used)
-let noteText = ["C", "C#", "D", "D#", "E", "F", "F#", "G", "G#", "A", "A#", "B"];
-
-let ct = 0; // Chord Type is explained below
 /*
  * Chord Types is a reference to the type of chord the song is using at the time, either major minor, or the diminished variations... 
  * The first part of each chord type is all the non-accidental keys within the chord except for the roots and fifths.
@@ -51,15 +68,6 @@ const chordTypes = [
         [6, 18]
     ],
 ];
-
-// This sets the note text starting from base C
-setMusicInfo = function() {
-    noteText = ["C", "C#", "D", "D#", "E", "F", "F#", "G", "G#", "A", "A#", "B"];
-    var nDiff = parseInt(document.getElementById('key').value)
-    for (var i = 0; i < nDiff; i++) noteText.push(noteText.shift())
-    noffset = (parseInt(document.getElementById("octave").value));
-    ct = parseInt(document.getElementById('chord_type').value);
-}
 
 /*
  * Plays audio from a source of midiBoxes using Tone.js... This is my weird way out and my version of
