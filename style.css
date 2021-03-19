@@ -11,7 +11,12 @@
     }
 }
 
+body {
+    background: linear-gradient(to left, #e7e7e7 0%, #002bec 100%);
+}
+
 #sideBar {
+    background-color: aliceblue;
     border: 2px solid #000000;
     border-radius: 5px;
     height: 85%;
@@ -21,6 +26,7 @@
 }
 
 #midiParams {
+    background-color: aliceblue; 
     border: 2px solid #000000;
     border-radius: 5px;
     position: absolute;
@@ -49,4 +55,15 @@
 #title {
     text-align: center;
     height: 30%;
+}
+
+#bgdimg {
+    background-image: url(bgd.png);
+    position: absolute;
+    
+    left: -50%;
+    width: 200%;
+    height: 15%;
+    top: 2%;
+    transform: scale(0.5);
 }

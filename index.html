@@ -23,11 +23,18 @@
             <h2>Parameters</h2>
             <br/>
             <li>
+                <h4>Note Wave Form - <br><select id="wave">
+						<option value = "triangle" selected>triangle</option>
+						<option value = "square">square</option>
+						<option value = "sine">sine</option>
+                        <option value = "sawtooth">sawtooth</option>
+					</select> <button onclick="setSoundType(document.getElementById('wave').value);">Change</button></h4>
+            </li>
+            <li>
                 <h4>Style - <select id="style">
-						<option value = "1">Happy</option>
-						<option value = "2">Sad</option>
-						<option value = "3">Energetic</option>
-						<option value = "4">Scary</option>
+						<option value = "1">Classical</option>
+						<option value = "2">Rock</option>
+						<option value = "3">Jazz</option>
 					</select></h4>
             </li>
             <li>
@@ -42,10 +49,7 @@
 						<option value = "8">High</option>
 					</select></h4>
             </li>
-            <br/>
-            <li>
-                <button onclick="generate();">Generate</button>
-            </li>
+            
         </ul>
         <hr/>
         <ul style="list-style-type: none;">
@@ -61,11 +65,18 @@
 						<option value = "4">wav</option>
 					</select></h4>
             </li>
-            <br>
+            <br/>
             <li>
-                <button id="preview_button" onclick="playGen();">Preview</button>
-                <button>Download</button>
+                <button onclick="generate();">Generate</button>
+                    <br><br>
+                    <span id="genText">
+                        <span style='border: 1px solid #000; background-color: #fff; padding-left: 5px; padding-right: 5px; padding-top: 2px; padding-bottom: 2px; color: red;'>
+                            Nothing generated yet
+                        </span>
+                    </span>
             </li>
+            <br>
+            <li id="prev/downloadBtns"></li>
         </ul>
     </div>
 
@@ -81,6 +92,7 @@
         </p>
     </div>
 
+    <div id="bgdimg"></div>
 
     <div id="midiParams">
         <h2>Midi Input Parameters</h2>

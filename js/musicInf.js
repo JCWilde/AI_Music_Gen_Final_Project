@@ -3,25 +3,19 @@ var synth = new Tone.PolySynth().toMaster();
 function sleep(ms) { return new Promise(resolve => setTimeout(resolve, ms)); }
 
 class midiBox {
+    note = 0;
+    time = 0;
+    pressed = false;
+
     noteText = ["C", "C#", "D", "D#", "E", "F", "F#", "G", "G#", "A", "A#", "B"];
     nDiff = 0;
     noffest = parseInt(document.getElementById("octave").value);
     ct = parseInt(document.getElementById('chord_type').value);
 
-    note = 0;
-    time = 0;
-    pressed = false;
-
     constructor(_note, _time) {
         this.note = _note;
         this.time = _time;
-
-        // This is pretty much the same code from set music, the basic idea is that each time
-        // slice will be able to have its own key, this will allow for key switches over time.
-        this.noteText = ["C", "C#", "D", "D#", "E", "F", "F#", "G", "G#", "A", "A#", "B"];
-        this.nDiff = parseInt(document.getElementById('key').value);
-        for (var i = 0; i < this.nDiff; i++) this.noteText.push(this.noteText.shift());
-        this.noffset = parseInt(document.getElementById("octave").value);
+        this.setMusicInfo(parseInt(document.getElementById('key').value));
         this.ct = parseInt(document.getElementById('chord_type').value);
     }
 
@@ -30,7 +24,6 @@ class midiBox {
         this.nDiff = _nDiff;
         for (var i = 0; i < this.nDiff; i++) this.noteText.push(this.noteText.shift());
         this.noffset = (parseInt(document.getElementById("octave").value));
-        this.ct = parseInt(document.getElementById('chord_type').value);
     }
     
     getNote() {
@@ -49,26 +42,42 @@ class midiBox {
 const chordTypes = [
     [
         // major
-        [2, 4, 5, 9, 11, 14, 16, 17, 21, 23],
+        [0, 2, 4, 5, 7, 9, 11, 12, 14, 16, 17, 19, 21, 23, 24],
         [7, 19]
     ],
     [
         // minor
-        [2, 3, 5, 8, 10, 14, 15, 17, 20, 22],
+        [0, 2, 3, 5, 7, 8, 10, 12, 14, 15, 17, 19, 20, 22, 24],
         [7, 19]
     ],
     [
         // Diminished Whole-Half
-        [1, 3, 4, 7, 9, 10, 13, 15, 16, 19, 21, 22],
+        [0, 1, 3, 4, 6, 7, 9, 10, 12, 13, 15, 16, 18, 19, 21, 22, 24],
         [6, 18]
     ],
     [   
         // Diminished Half-Whole
-        [2, 3, 5, 8, 9, 11, 14, 15, 17, 20, 21, 23],
+        [0, 2, 3, 5, 6, 8, 9, 11, 12, 14, 15, 17, 18, 20, 21, 23, 24],
         [6, 18]
     ],
 ];
 
+
+function setSoundType(type) {
+    synth.set({
+        volume: -5,
+        oscillator : {
+            type: type
+        },
+        envelope : {
+            attack : 0.1,
+            decay : 0.2,
+            sustain : 0.5,
+            release : 0.8
+        }
+    });
+}
+setSoundType("triangle");
 /*
  * Plays audio from a source of midiBoxes using Tone.js... This is my weird way out and my version of
  * a midi player for the time being. Maybe not the best thing, but it does work.

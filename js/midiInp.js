@@ -1,7 +1,7 @@
 
 function sketch_idnameofdiv(p) {
     class midiBoxInp extends midiBox {
-
+        curDown = false;
         color = SKETCH.color(0, 0, 0, 0);
         show() {
             p.stroke(p.color('#222222'));
@@ -15,19 +15,16 @@ function sketch_idnameofdiv(p) {
                         this.pressed = !this.pressed;
                         if (this.pressed) {
                             this.color = p.color(0, 150, 0, 200);
-                            // play note
-                            synth.triggerAttackRelease(this.getNote(), document.getElementById('note_length').value + "n");
-                        } else
-                            this.color = p.color(0, 0, 0, 0);
+                        } else this.color = p.color(0, 0, 0, 0);
                     }
                     break;
                 case 1:
-                    if (!this.pressed) {
-                        if (this.mouseInside())
-                            this.color = p.color(0, 0, 150, 200);
-                        else
-                            this.color = p.color(0, 0, 0, 0);
+                    if (!this.pressed) this.color = this.mouseInside() ? p.color(0, 0, 150, 200): p.color(0, 0, 0, 0);
+                    if (!this.curDown && this.mouseInside()) { // play note
+                        synth.triggerAttackRelease(this.getNote(), document.getElementById('note_length').value + "n");
+                        this.curDown = true;
                     }
+                    if (this.curDown && !this.mouseInside()) this.curDown = false;
                     break;
             }
         }
@@ -39,10 +36,6 @@ function sketch_idnameofdiv(p) {
         }
     }
     
-    let noffset = 0; // Note Offset (Don't be fooled, offset is just which octave is being used)
-    let noteText = ["C", "C#", "D", "D#", "E", "F", "F#", "G", "G#", "A", "A#", "B"];
-    let ct = 0; // Chord Type is explained below
-    let nDiff = 0; // The difference that corrects the octave according to what key is played
     const SIZEOFMIDIBOX = 0.65;
     let amtx = 16;
     let amty = 25;
