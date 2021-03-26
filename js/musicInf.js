@@ -97,6 +97,5 @@ playMidi = async function(notes, BPM = 120) {
             await sleep((60000 / BPM) / (parseInt(amt) / 4));
         }
     }
-    await sleep(500);
     AUDIO_PLAYING = false;
 }

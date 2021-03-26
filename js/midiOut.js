@@ -86,8 +86,8 @@ get_slide_neighbor = function(w) {
     var mainKey = w.timeSlices[w.timeSlices.length - 1].notes[0].nDiff;
 
     var n = new Measure();
-    n.timeSlices[0].notes[mainKey].pressed = true;
-    for(var t = 1; t < w.timeSlices.length; t++) {
+    //n.timeSlices[0].notes[mainKey].pressed = true;
+    for(var t = 0; t < w.timeSlices.length; t++) {
 
         // this grabs each note in the current time slice within the measure w
         var notes = [];
@@ -106,25 +106,36 @@ get_slide_neighbor = function(w) {
                         break;
                 }
                 if(nloc + nchange > chordTypes[ct][0].length - 1 || nloc + nchange < 0) nchange *= -1;
-                var fnote = fnote >= 0 && fnote <= 24 ? chordTypes[ct][0][nloc + nchange]: chordTypes[ct][0][nloc];
+                var fnote = (fnote >= 0 && fnote <= 24) ? chordTypes[ct][0][nloc + nchange]: chordTypes[ct][0][nloc];
                 
-                n.timeSlices[t].notes[fnote].pressed = Math.random() > 0.10;
+                n.timeSlices[t].notes[fnote].pressed = Math.random() > 0.05;
+            } else {
+                var nloc = notes[i];
+                if(nloc + nchange > 24 || nloc + nchange < 0) nchange *= -1;
+                var fnote = (fnote >= 0 && fnote <= 24) ? nloc + nchange: nloc;
+                n.timeSlices[t].notes[fnote].pressed = Math.random() > 0.05;
             }
         }
     }
     return n;
 }
 
-notTooRandom = function() {
-    // main chorus type bit
-    var main_measures = [base_measure];
-    var cur = get_slide_neighbor(base_measure);
-    for(var i = 0; i < 3; i++) {
-        main_measures.push(cur);
-        cur = get_slide_neighbor(base_measure); 
-    }
+createSection = function(amt, start_from, get_neighbor = get_slide_neighbor) {
+    var section = [start_from];
+    for(var i = 0; i < amt - 1; i++) 
+        section.push(get_neighbor(section[section.length - 1]));
+    return section;
+}
 
-    measures = main_measures;
+notTooRandom = function() {
+    var intro = createSection(2, base_measure);
+    var chorus = createSection(4, intro[intro.length - 1]);
+    var verse1 = createSection(6, chorus[chorus.length - 1]);
+    var verse2 = createSection(6, chorus[chorus.length - 1]);
+    var bridge = createSection(4, chorus[chorus.length - 1]);
+    var outro = createSection(2, chorus[chorus.length - 1]);
+
+    measures = intro.concat(chorus).concat(verse1).concat(chorus).concat(verse2).concat(chorus).concat(bridge).concat(chorus).concat(outro);
 }
 
 grabBaseMeasure = function() {
