@@ -101,6 +101,8 @@
 				<button id="midiRefresh" onclick="if(confirm('Are you sure you want to refresh the midi you have made so far?')) {SKETCH.setup();}">
 					Refresh Midi
 				</button>
+                <button onClick="SKETCH.setMusicInfo();">Update Key/Scale</button>
+                <b> | </b><input type="checkbox" id="isChord" title="Press this if your input is only chords... ">Chords Only?</input><b> | </b>
 				<span style="font-weight: bold;">Key - <select id="key">
 					<option value = "9">A</option>
 					<option value = "10">A#</option>
@@ -121,7 +123,6 @@
 					<option value = "2">Diminished Whole-Half</option>
 					<option value = "3">Diminished Half-Whole</option>
 				</select></span>
-        <button onClick="SKETCH.setMusicInfo();">Update Key/Scale</button>
         <span style="font-weight: bold;">Note Length - <select id="note_length">
 					<option value = "1">Whole</option>
 					<option value = "2">Half</option> 

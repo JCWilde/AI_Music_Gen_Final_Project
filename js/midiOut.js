@@ -35,9 +35,7 @@ generate = function() {
     document.getElementById("genText").innerHTML = "<span style='border: 1px solid #000; background-color: #fff; padding-left: 5px; padding-right: 5px; padding-top: 2px; padding-bottom: 2px; color: red;'>Getting Ready...</span>";
     setupOut();
     document.getElementById("genText").innerHTML = "<span style='border: 1px solid #000; background-color: #fff; padding-left: 5px; padding-right: 5px; padding-top: 2px; padding-bottom: 2px; color: red;'>Try again...</span>";
-    notTooRandom();
-
-    document.getElementById("genText").innerHTML = "<span style='border: 1px solid #000; background-color: #fff; padding-left: 5px; padding-right: 5px; padding-top: 2px; padding-bottom: 2px; color: green;'>Finished</span>";
+    document.getElementById("genText").innerHTML = notTooRandom();
     document.getElementById("prev/downloadBtns").innerHTML = "<button id='preview_button' onclick='playGen(measures);'>Preview</button><button>Download</button>"
 }
 
@@ -81,7 +79,7 @@ get_random_neighbor = function(w) {
     return n;
 }
 
-get_slide_neighbor = function(w) {
+get_slide_neighbor_melody = function(w) {
     // the basic logic of this first test is just to slide the notes up or down by a certain amount.
     var mainKey = w.timeSlices[w.timeSlices.length - 1].notes[0].nDiff;
 
@@ -96,7 +94,7 @@ get_slide_neighbor = function(w) {
                 notes.push(w.timeSlices[t].notes[i].note);
         
         var ct = w.timeSlices[0].notes[0].ct;
-        change_by = [0,0,1,1,1,1,1,2,2,2,2,2,2,3,3,3,3];
+        change_by = [0,0,1,1,1,1,1,2,2,2,2,2,2,3,3,3,3,4,4,5,5,5,6,7,7,8];
         var nchange = change_by[Math.floor(Math.random() * change_by.length)] * (Math.random() <= .5?1:-1);
         for(var i in notes) {
             if(chordTypes[ct][0].includes(notes[i])) {
@@ -120,7 +118,46 @@ get_slide_neighbor = function(w) {
     return n;
 }
 
-createSection = function(amt, start_from, get_neighbor = get_slide_neighbor) {
+get_slide_neighbor_chords = function(w) {
+    // the basic logic of this first test is just to slide the notes up or down by a certain amount.
+    var mainKey = w.timeSlices[w.timeSlices.length - 1].notes[0].nDiff;
+
+    var n = new Measure();
+    //n.timeSlices[0].notes[mainKey].pressed = true;
+    for(var t = 0; t < w.timeSlices.length; t++) {
+
+        // this grabs each note in the current time slice within the measure w
+        var notes = [];
+        for(var i in w.timeSlices[t].notes)
+            if(w.timeSlices[t].notes[i].pressed)
+                notes.push(w.timeSlices[t].notes[i].note);
+        
+        var ct = w.timeSlices[0].notes[0].ct;
+        change_by = [0,0,1,1,1,1,1,2,2,2,2,2,2,3,3,3,3,4,4,5,5,5,6,7,7,8];
+        var nchange = change_by[Math.floor(Math.random() * change_by.length)] * (Math.random() <= .5?1:-1);
+        for(var i in notes) {
+            if(chordTypes[ct][0].includes(notes[i])) {
+                var nloc;
+                for(nloc = 0; nloc < chordTypes[ct][0].length; nloc++) {
+                    if(chordTypes[ct][0][nloc] === notes[i])
+                        break;
+                }
+                if(nloc + nchange > chordTypes[ct][0].length - 1 || nloc + nchange < 0) nchange *= -1;
+                var fnote = (fnote >= 0 && fnote <= 24) ? chordTypes[ct][0][nloc + nchange]: chordTypes[ct][0][nloc];
+                
+                n.timeSlices[t].notes[fnote].pressed = Math.random() > 0.05;
+            } else {
+                var nloc = notes[i];
+                if(nloc + nchange > 24 || nloc + nchange < 0) nchange *= -1;
+                var fnote = (fnote >= 0 && fnote <= 24) ? nloc + nchange: nloc;
+                n.timeSlices[t].notes[fnote].pressed = Math.random() > 0.05;
+            }
+        }
+    }
+    return n;
+}
+
+createSection = function(amt, start_from, get_neighbor = get_slide_neighbor_melody) {
     var section = [start_from];
     for(var i = 0; i < amt - 1; i++) 
         section.push(get_neighbor(section[section.length - 1]));
@@ -128,14 +165,32 @@ createSection = function(amt, start_from, get_neighbor = get_slide_neighbor) {
 }
 
 notTooRandom = function() {
-    var intro = createSection(2, base_measure);
-    var chorus = createSection(4, intro[intro.length - 1]);
-    var verse1 = createSection(6, chorus[chorus.length - 1]);
-    var verse2 = createSection(6, chorus[chorus.length - 1]);
-    var bridge = createSection(4, chorus[chorus.length - 1]);
-    var outro = createSection(2, chorus[chorus.length - 1]);
+    var func = get_slide_neighbor_melody;
+    if(document.getElementById("isChord").checked) {
+
+        
+
+        func = get_slide_neighbor_chords;
+    } else {
+        for(var t in base_measure.timeSlices) {
+            var notes = [];
+            for(var i in base_measure.timeSlices[t].notes)
+                if(base_measure.timeSlices[t].notes[i].pressed)
+                    notes.push(base_measure.timeSlices[t].notes[i].note);
+            if(notes.length > 1)
+                return "<span style='border: 1px solid #000; background-color: #fff; padding-left: 5px; padding-right: 5px; padding-top: 2px; padding-bottom: 2px; color: red;'>Not a valid melody</span>";
+        }
+    }
+
+    var intro = createSection(2, base_measure, func);
+    var chorus = createSection(4, intro[intro.length - 1], func);
+    var verse1 = createSection(6, chorus[chorus.length - 1], func);
+    var verse2 = createSection(6, chorus[chorus.length - 1], func);
+    var bridge = createSection(4, chorus[chorus.length - 1], func);
+    var outro = createSection(2, chorus[chorus.length - 1], func);
 
     measures = intro.concat(chorus).concat(verse1).concat(chorus).concat(verse2).concat(chorus).concat(bridge).concat(chorus).concat(outro);
+    return "<span style='border: 1px solid #000; background-color: #fff; padding-left: 5px; padding-right: 5px; padding-top: 2px; padding-bottom: 2px; color: green;'>Finished</span>";
 }
 
 grabBaseMeasure = function() {
