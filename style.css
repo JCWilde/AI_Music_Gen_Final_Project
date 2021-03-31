@@ -16,7 +16,7 @@ body {
 }
 
 #sideBar {
-    background-color: aliceblue;
+    background-color: rgb(240, 248, 255, 0.5);;
     border: 2px solid #000000;
     border-radius: 5px;
     height: 85%;
@@ -26,7 +26,7 @@ body {
 }
 
 #midiParams {
-    background-color: aliceblue; 
+    background-color: rgb(240, 248, 255, 0.5); 
     border: 2px solid #000000;
     border-radius: 5px;
     position: absolute;
@@ -46,6 +46,7 @@ body {
 }
 
 #midiSelectors {
+    background-color: rgb(240, 248, 255, 0.5); 
     border: 2px solid #000000;
     border-radius: 5px;
     width: 100%;

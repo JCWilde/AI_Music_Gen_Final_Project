@@ -62,6 +62,113 @@ const chordTypes = [
     ],
 ];
 
+val2steps = function(steps, ct) {
+    return chordTypes[ct][0][steps - 1];
+}
+
+/*
+    Major
+    Minor
+    Diminished
+    Major 7th
+    Minor 7th
+    Dominant 7th
+    suspended 2nd
+    suspended 4th
+    augmented
+*/
+
+const chords_check = [
+    "",
+    "0 4 7",
+    "0 3 7",
+    "0 3 6",
+    "0 4 7 11",
+    "0 3 7 10",
+    "0 4 7 10",
+    "0 2 7",
+    "0 5 7",
+    "0 4 8"
+];
+
+/*
+
+    MAJOR: 0, 3, 5, 7, 8
+    MINOR: 1, 2, 4, 6
+
+*/
+
+
+
+const maj_min = [
+    [0, 0, 0, 3, 3, 5, 7, 8],
+    [1, 1, 1, 2, 4, 4, 6]
+];
+
+const chords = [
+    [0, 4, 7],      // major             0
+    [0, 3, 7],      // minor             1
+    [0, 3, 6],      // diminished        2
+    [0, 4, 7, 11],  // major7th          3
+    [0, 3, 7, 10],  // minor7th          4
+    [0, 4, 7, 10],  // dominant7th       5
+    [0, 2, 7],      // suspended2nd      6
+    [0, 5, 7],      // suspended4th      7
+    [0, 4, 8]       // augmented         8
+];
+
+list2ct = function(KEY, notes) {
+    var res = "";
+    var rootDiff = notes[0];
+    for(var i in notes) res += (notes[i] - rootDiff) + " ";
+    var i = chords_check.indexOf(res.trim()) - 1;
+
+    // returning [whether we want a major or minor type chord, the root note]
+    if(maj_min[1].includes(i))
+        return [1, rootDiff];
+    return [0, (rootDiff + KEY % 12)];
+}
+
+prog2keys = function(KEY, prg) {
+    var res = [];
+    for(var p in prg) {
+        var notes = [];
+        var maj = prg[p] < 0 ? 1 : 0;
+        notes = chords[choice(maj_min[maj])];
+        for(var n in notes) notes[n] += KEY + val2steps(Math.abs(prg[p]), maj);
+        res.push(notes);
+    }
+    return res;
+}
+
+const chordProgressions = [
+    [ // major chord progressions
+        [1, 4, 5],
+        [1, -6, 4, 5],
+        [-2, 5, 1],
+        [1, -6, -2, 5],
+        [1, 5, -6, 4],
+        [1, 5, -6, 5],
+        [1, -3, 4, 5],
+        [1, 4, 1, 5],
+        [1, 4, -2, 5]
+    ],
+    [ // minor chord progressions
+        [-1, 6, 7],
+        [-1, -4, 7],
+        [-1, -4, -5],
+        [-1, 6, 3, 7],
+        [-2, -5, -1],
+        [-1, -4, -5, -1],
+        [6, 7, -1, -1],
+        [-1, 7, 6, 7],
+        [-1, -4, -1]
+    ]
+];
+
+choice = function(arry) {
+    return arry[Math.floor(Math.random() * arry.length)];
+}
 
 function setSoundType(type) {
     synth.set({
