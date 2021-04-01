@@ -1,36 +1,4 @@
-
-// this function just combines all of the on notes of both measures and pushes them together...
-// This is what im going to use for shoving the melody and chord measures together.
-combine_measures = function(m1, m2) {
-    var res = new Measure();
-    for(var t in m1.timeSlices)
-        for(var n in m1.timeSlices[t].notes)
-            res.timeSlices[t].notes[n].pressed = (m1.timeSlices[t].notes[n].pressed || m2.timeSlices[t].notes[n].pressed);
-    return res;
-}
-
-/*
- * get neighbors is just trying to find what measures that fit inside the scope of their scale that will also work fit seemlessly into the song.
- */
-get_random_neighbor = function(w) {
-    // w is a single measure to the left or right of the output measures
-    // N is a list of measures that could fit next to w.
-    // fit is defined by having continuity between w -> N[any] -> w
-
-    // the basic logic of this first test is just to randomly choose notes.
-    var mainKey = w.timeSlices[w.timeSlices.length - 1].notes[0].nDiff;
-
-    var n = new Measure();
-    n.timeSlices[0].notes[mainKey].pressed = true;
-    for(var t = 1; t < w.timeSlices.length; t++) {
-        var ct = w.timeSlices[0].notes[0].ct;
-        var rn = chordTypes[ct][0][Math.floor(Math.random() * chordTypes[ct][0].length)];
-        n.timeSlices[t].notes[rn].pressed = Math.random() > 0.10;
-    }
-    return n;
-}
-
-get_slide_neighbor_melody = function(w, KEY) {
+not_in_use_get_neighbor_melody = function(w, KEY) {
     // the basic logic of this first test is just to slide the notes up or down by a certain amount.
     var mainKey = w.timeSlices[w.timeSlices.length - 1].notes[0].nDiff;
 
@@ -64,6 +32,75 @@ get_slide_neighbor_melody = function(w, KEY) {
                 var fnote = (fnote >= 0 && fnote <= 24) ? nloc + nchange: nloc;
                 n.timeSlices[t].notes[fnote].pressed = Math.random() > 0.05;
             }
+        }
+    }
+    return n;
+}
+
+
+// this function just combines all of the on notes of both measures and pushes them together...
+// This is what im going to use for shoving the melody and chord measures together.
+combine_measures = function(m1, m2) {
+    var res = new Measure();
+    for(var t in m1.timeSlices)
+        for(var n in m1.timeSlices[t].notes)
+            res.timeSlices[t].notes[n].pressed = (m1.timeSlices[t].notes[n].pressed || m2.timeSlices[t].notes[n].pressed);
+    return res;
+}
+
+/*
+ * get neighbors is just trying to find what measures that fit inside the scope of their scale that will also work fit seemlessly into the song.
+ */
+get_random_neighbor = function(w) {
+    // w is a single measure to the left or right of the output measures
+    // N is a list of measures that could fit next to w.
+    // fit is defined by having continuity between w -> N[any] -> w
+
+    // the basic logic of this first test is just to randomly choose notes.
+    var mainKey = w.timeSlices[w.timeSlices.length - 1].notes[0].nDiff;
+
+    var n = new Measure();
+    n.timeSlices[0].notes[mainKey].pressed = true;
+    for(var t = 1; t < w.timeSlices.length; t++) {
+        var ct = w.timeSlices[0].notes[0].ct;
+        var rn = chordTypes[ct][0][Math.floor(Math.random() * chordTypes[ct][0].length)];
+        n.timeSlices[t].notes[rn].pressed = Math.random() > 0.10;
+    }
+    return n;
+}
+
+get_neighbor_melody = function(w, KEY) {
+    // the basic logic of this first test is just to slide the notes up or down by a certain amount.
+    var mainKey = w.timeSlices[w.timeSlices.length - 1].notes[0].nDiff;
+
+    var n = new Measure();
+    //n.timeSlices[0].notes[mainKey].pressed = true;
+    var cnote = -100;
+    var currentct;
+    for(var t = 0; t < w.timeSlices.length; t++) {
+        var notes = [];
+        for(var i in w.timeSlices[t].notes)
+            if(w.timeSlices[t].notes[i].pressed)
+                notes.push(w.timeSlices[t].notes[i].note);
+        if(notes.length > 0) {
+            cnote = notes[0]
+            if(cnote < 12) cnote += 12;
+            else cnote -= 12;
+            var res = "";
+            for(var i in notes) res += (notes[i] - cnote) + " ";
+            currentct = maj_min[0].includes(chords_check.indexOf(res.trim()) - 1) ? 1 : 0;
+        }
+        if(cnote >= 0) {
+            var change_by = [0,0,1,1,1,1,1,2,2,2,2,2,2,3,3,3,3,4,4,5,5,5];
+            var nchange = choice(change_by) * (Math.random() <= .5?1:-1);
+            var nloc;
+            for(nloc = 0; nloc < chordTypes[currentct][0].length; nloc++)
+                if(chordTypes[currentct][0][nloc] === cnote)
+                    break;
+            if(nloc + nchange > chordTypes[currentct][0].length - 1 || nloc + nchange < 0) nchange *= -1;
+            var cnote = (cnote >= 0 && cnote <= 24) ? chordTypes[currentct][0][nloc + nchange]: chordTypes[currentct][0][nloc];
+            cnote += (cnote < 0) ? 12 : (cnote > 24) ? -12 : 0;
+            n.timeSlices[t].notes[cnote].pressed = Math.random() > 0.10;
         }
     }
     return n;
@@ -133,7 +170,7 @@ get_neighbor_chords = function(w, KEY) {
 
 // This area is reserved for the higher level generation functions
 
-createSection = function(amt, start_from, KEY, get_neighbor = get_slide_neighbor_melody) {
+createSection = function(amt, start_from, KEY, get_neighbor = get_neighbor_melody) {
     var section = [start_from];
     for(var i = 0; i < amt - 1; i++) 
         section.push(get_neighbor(section[section.length - 1], KEY));
