@@ -62,8 +62,12 @@ const chordTypes = [
     ],
 ];
 
-val2steps = function(steps, ct) {
-    return chordTypes[ct][0][steps - 1];
+val2steps = function(val, ct) {
+    return chordTypes[ct][0][val - 1];
+}
+
+step2val = function(step, ct) {
+    return chordTypes[ct][0].indexOf(step) + 1; 
 }
 
 /*
@@ -145,7 +149,6 @@ const chordProgressions = [
     [ // major chord progressions
         [1, 4, 5],
         [1, -6, 4, 5],
-        [-2, 5, 1],
         [1, -6, -2, 5],
         [1, 5, -6, 4],
         [1, 5, -6, 5],
@@ -160,7 +163,6 @@ const chordProgressions = [
         [-1, 6, 3, 7],
         [-2, -5, -1],
         [-1, -4, -5, -1],
-        [6, 7, -1, -1],
         [-1, 7, 6, 7],
         [-1, -4, -1]
     ]

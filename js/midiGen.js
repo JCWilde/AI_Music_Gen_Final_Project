@@ -69,13 +69,12 @@ get_slide_neighbor_melody = function(w, KEY) {
     return n;
 }
 
-get_slide_neighbor_chords = function(w, KEY) {
-
+get_neighbor_chords = function(w, KEY) {
     var n = new Measure();
     //n.timeSlices[0].notes[mainKey].pressed = true;
+    var prg = [];
     for(var t = 0; t < w.timeSlices.length; t++) {
         // This entire loop should be dedicated to finding the chord progression this measure is using...
-        
         var notes = [];
         for(var i in base_measure.timeSlices[t].notes)
             if(base_measure.timeSlices[t].notes[i].pressed)
@@ -83,10 +82,47 @@ get_slide_neighbor_chords = function(w, KEY) {
         var res = "";
         var rootDiff = notes[0];
         for(var i in notes) res += (notes[i] - rootDiff) + " ";
+        var val   = chords_check.indexOf(res.trim());
+        var maj = maj_min[0].includes(val - 1) ? 1 : 0;
+        var diff  = rootDiff % 12;
+        prg.push(step2val(diff, maj) * (maj == 1 ? 1:-1));
+    }
+    var nprg = [];
+    if(prg[0] > 0) nprg = prog2keys(KEY, choice(chordProgressions[0]));
+    else nprg = prog2keys(KEY, choice(chordProgressions[1]));
+    for(var noteset in nprg) {
+        var badset = false;
+        for(var note in nprg[noteset]) {
+            if(nprg[noteset][note] > 24) {
+                badset = true; break;
+            }
+        }
+        if(badset)
+            for(var note in nprg[noteset])
+                nprg[noteset][note] -= 12;
 
-        
-
-
+    }
+    var steps2place = [];
+    switch(w.timeSlices.length) {
+        case 4:
+            steps2place = [0, 1, 2, 3];
+            break;
+        case 8:
+            steps2place = [0, 2, 4, 6];
+            break;
+        case 16:
+            steps2place = [0, 2, 4, 6, 8, 10, 12, 14];
+            break;
+        case 32:
+            steps2place = [0, 2, 4, 6, 8, 10, 12, 14, 16, 18, 20, 22, 24, 26, 28];
+            break;
+    }
+    for(var i in steps2place){
+        if(Math.random() > .2) {
+            for(var note in nprg[i % nprg.length]){
+                n.timeSlices[steps2place[i]].notes[nprg[i % nprg.length][note]].pressed = Math.random() > 0.2;
+            }
+        }
     }
     return n;
 }
@@ -118,7 +154,7 @@ notTooRandom = function() {
             if(!chords_check.includes(res.trim()))
                 return "<span style='border: 1px solid #000; background-color: #fff; padding-left: 5px; padding-right: 5px; padding-top: 2px; padding-bottom: 2px; color: red;'>Not a valid set of chords</span>";
         }
-        isChord = True;
+        isChord = true;
     } else {
         for(var t in base_measure.timeSlices) {
             var notes = [];
@@ -129,24 +165,23 @@ notTooRandom = function() {
                 return "<span style='border: 1px solid #000; background-color: #fff; padding-left: 5px; padding-right: 5px; padding-top: 2px; padding-bottom: 2px; color: red;'>Not a valid melody</span>";
         }
     }
-
-    if(isChord) {
-
+    
+    var chord_sects = [[base_measure]];
+    for(var i in [get_neighbor_chords]) {
+        for(var j in [[2], 4, 6, 6, 4, 2]) {
+            chord_sects.push( createSection(chord_sects[chord_sects.length - 1][chord_sects[chord_sects.length - 1][chord_sects[chord_sects.length - 1].length - 1]]) );
+        }
     }
     
-    /*
-
+    // chord stuff
     var MAIN_KEY = parseInt(document.getElementById('key').value);
-    var intro = createSection(2, base_measure, MAIN_KEY);
-    var chorus = createSection(4, intro[intro.length - 1], MAIN_KEY);
-    var verse1 = createSection(6, chorus[chorus.length - 1], MAIN_KEY);
-    var verse2 = createSection(6, chorus[chorus.length - 1], MAIN_KEY);
-    var bridge = createSection(4, chorus[chorus.length - 1], MAIN_KEY);
-    var outro = createSection(2, chorus[chorus.length - 1], MAIN_KEY);
-
-
+    var intro = createSection(2, base_measure, MAIN_KEY, get_neighbor_chords);
+    var chorus = createSection(4, intro[intro.length - 1], MAIN_KEY, get_neighbor_chords);
+    var verse1 = createSection(6, chorus[chorus.length - 1], MAIN_KEY, get_neighbor_chords);
+    var verse2 = createSection(6, chorus[chorus.length - 1], MAIN_KEY, get_neighbor_chords);
+    var bridge = createSection(4, chorus[chorus.length - 1], MAIN_KEY, get_neighbor_chords);
+    var outro = createSection(2, chorus[chorus.length - 1], MAIN_KEY, get_neighbor_chords);
 
     measures = intro.concat(chorus).concat(verse1).concat(chorus).concat(verse2).concat(chorus).concat(bridge).concat(chorus).concat(outro);
-    */
     return "<span style='border: 1px solid #000; background-color: #fff; padding-left: 5px; padding-right: 5px; padding-top: 2px; padding-bottom: 2px; color: green;'>Finished</span>";
 }
