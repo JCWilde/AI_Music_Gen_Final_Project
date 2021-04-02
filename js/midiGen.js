@@ -70,9 +70,6 @@ get_random_neighbor = function(w) {
 }
 
 get_neighbor_melody = function(w, KEY) {
-    // the basic logic of this first test is just to slide the notes up or down by a certain amount.
-    var mainKey = w.timeSlices[w.timeSlices.length - 1].notes[0].nDiff;
-
     var n = new Measure();
     //n.timeSlices[0].notes[mainKey].pressed = true;
     var cnote = -100;
@@ -170,15 +167,17 @@ get_neighbor_chords = function(w, KEY) {
 
 // This area is reserved for the higher level generation functions
 
-createSection = function(amt, start_from, KEY, get_neighbor = get_neighbor_melody) {
+createSection = function(amt, start_from, KEY) {
     var section = [start_from];
-    for(var i = 0; i < amt - 1; i++) 
-        section.push(get_neighbor(section[section.length - 1], KEY));
+    for(var i = 0; i < amt - 1; i++)
+        var chords = get_neighbor_chords(section[section.length - 1], KEY);
+        var melody = get_neighbor_melody(chords, KEY);
+        var part = combine_measures(chords, melody);
+        section.push(part);
     return section;
 }
 
 notTooRandom = function() {
-    var isChord = false;
     if(document.getElementById("isChord").checked) {
         for(var t in base_measure.timeSlices) {
             var notes = [];
@@ -191,7 +190,6 @@ notTooRandom = function() {
             if(!chords_check.includes(res.trim()))
                 return "<span style='border: 1px solid #000; background-color: #fff; padding-left: 5px; padding-right: 5px; padding-top: 2px; padding-bottom: 2px; color: red;'>Not a valid set of chords</span>";
         }
-        isChord = true;
     } else {
         for(var t in base_measure.timeSlices) {
             var notes = [];
@@ -203,21 +201,14 @@ notTooRandom = function() {
         }
     }
     
-    var chord_sects = [[base_measure]];
-    for(var i in [get_neighbor_chords]) {
-        for(var j in [[2], 4, 6, 6, 4, 2]) {
-            chord_sects.push( createSection(chord_sects[chord_sects.length - 1][chord_sects[chord_sects.length - 1][chord_sects[chord_sects.length - 1].length - 1]]) );
-        }
-    }
-    
     // chord stuff
     var MAIN_KEY = parseInt(document.getElementById('key').value);
-    var intro = createSection(2, base_measure, MAIN_KEY, get_neighbor_chords);
-    var chorus = createSection(4, intro[intro.length - 1], MAIN_KEY, get_neighbor_chords);
-    var verse1 = createSection(6, chorus[chorus.length - 1], MAIN_KEY, get_neighbor_chords);
-    var verse2 = createSection(6, chorus[chorus.length - 1], MAIN_KEY, get_neighbor_chords);
-    var bridge = createSection(4, chorus[chorus.length - 1], MAIN_KEY, get_neighbor_chords);
-    var outro = createSection(2, chorus[chorus.length - 1], MAIN_KEY, get_neighbor_chords);
+    var intro = createSection(2, base_measure, MAIN_KEY);
+    var chorus = createSection(4, intro[intro.length - 1], MAIN_KEY);
+    var verse1 = createSection(6, chorus[chorus.length - 1], MAIN_KEY);
+    var verse2 = createSection(6, chorus[chorus.length - 1], MAIN_KEY);
+    var bridge = createSection(4, chorus[chorus.length - 1], MAIN_KEY);
+    var outro = createSection(2, chorus[chorus.length - 1], MAIN_KEY);
 
     measures = intro.concat(chorus).concat(verse1).concat(chorus).concat(verse2).concat(chorus).concat(bridge).concat(chorus).concat(outro);
     return "<span style='border: 1px solid #000; background-color: #fff; padding-left: 5px; padding-right: 5px; padding-top: 2px; padding-bottom: 2px; color: green;'>Finished</span>";
